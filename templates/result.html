@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Resultado - RPA Spotify</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="card centered">
+    <div class="status-icon">{% if success %}✓{% else %}!{% endif %}</div>
+    <h1>{% if success %}Sucesso{% else %}Não foi possível reproduzir{% endif %}</h1>
+    <p class="subtitle">{{ message }}</p>
+    <a class="button secondary" href="/">Voltar</a>
+  </main>
+</body>
+</html>

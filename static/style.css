@@ -1,0 +1,23 @@
+:root { font-family: Inter, Arial, sans-serif; color: #f8f8f8; background:#0c0c0f; }
+* { box-sizing: border-box; }
+body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px; background:linear-gradient(135deg,#0a0a0c,#17171d); }
+.card { width:min(720px,100%); background:#151519; border:1px solid #2a2a32; border-radius:20px; padding:34px; box-shadow:0 24px 60px rgba(0,0,0,.35); }
+.brand { color:#1ed760; font-size:12px; font-weight:800; letter-spacing:.16em; }
+h1 { margin:8px 0 8px; font-size:32px; }
+.subtitle { color:#b8b8c1; line-height:1.55; }
+.options { display:grid; gap:12px; margin:24px 0; }
+.option { display:flex; gap:12px; align-items:flex-start; border:1px solid #303039; border-radius:14px; padding:16px; cursor:pointer; background:#1c1c22; }
+.option:hover { border-color:#1ed760; }
+.option input { margin-top:5px; accent-color:#1ed760; }
+.option span { display:grid; gap:5px; }
+.option small { color:#a9a9b2; line-height:1.4; }
+.field-label { display:block; font-weight:700; margin:14px 0 8px; }
+select { width:100%; padding:13px; border-radius:10px; border:1px solid #393943; background:#0f0f13; color:#fff; }
+.button { display:inline-block; width:100%; border:0; margin-top:20px; border-radius:999px; padding:14px 18px; background:#1ed760; color:#071008; font-weight:800; text-decoration:none; text-align:center; cursor:pointer; }
+.button.secondary { background:#2a2a31; color:#fff; }
+.notice { padding:12px 14px; border-radius:10px; margin:16px 0; }
+.notice.success { background:#12331d; color:#85f4aa; }
+.notice.warning { background:#3a2a0e; color:#ffd678; }
+.hint { color:#aaa; font-size:13px; }
+.centered { text-align:center; }
+.status-icon { width:64px; height:64px; border-radius:50%; margin:0 auto 18px; display:grid; place-items:center; background:#1ed760; color:#0d1810; font-size:36px; font-weight:800; }

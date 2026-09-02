@@ -1,0 +1,39 @@
+# Secrets and local credentials
+.env
+.env.*
+!.env.example
+.spotify_token.json
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache and test artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build/package artifacts
+build/
+dist/
+*.egg-info/
+
+# Local editor/OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Temporary files generated while inspecting DOCX/PDF artifacts
+__docx_check/
+__docx_check.zip
+
+# Local logs
+*.log

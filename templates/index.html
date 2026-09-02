@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>RPA Spotify - Seleção de Playlist</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="card">
+    <div class="brand">CHECKPOINT RPA</div>
+    <h1>Escolha uma playlist</h1>
+    <p class="subtitle">A seleção será enviada ao Spotify e reproduzida no dispositivo configurado.</p>
+
+    {% if not authenticated %}
+      <div class="notice warning">Spotify ainda não autenticado.</div>
+      <a class="button secondary" href="/login">Conectar Spotify</a>
+    {% else %}
+      <div class="notice success">Spotify autenticado.</div>
+      {% if auth_error %}<div class="notice warning">{{ auth_error }}</div>{% endif %}
+
+      <form action="/play" method="post">
+        <section class="options">
+          {% for p in playlists %}
+          <label class="option">
+            <input type="radio" name="playlist" value="{{ p.id }}" {% if loop.first %}checked{% endif %}>
+            <span><strong>{{ p.name }}</strong><small>{{ p.description }}</small></span>
+          </label>
+          {% endfor %}
+        </section>
+
+        <label class="field-label" for="device_id">Dispositivo de reprodução</label>
+        <select name="device_id" id="device_id">
+          <option value="">Automático (dispositivo ativo)</option>
+          {% for d in devices %}
+          <option value="{{ d.id }}">{{ d.name }} - {{ d.type }}{% if d.is_active %} (ativo){% endif %}</option>
+          {% endfor %}
+        </select>
+
+        {% if not devices %}
+          <p class="hint">Abra o Spotify em um dispositivo para ele aparecer aqui.</p>
+        {% endif %}
+
+        <button class="button" type="submit">▶ Reproduzir playlist</button>
+      </form>
+    {% endif %}
+  </main>
+</body>
+</html>
