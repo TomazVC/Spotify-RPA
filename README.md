@@ -1,80 +1,152 @@
-# Checkpoint 1 - RPA - Spotify
+# CP2 - RPA utilizando Python
 
-Automação em Flask que recebe a escolha de uma playlist e inicia a reprodução no Spotify através da Web API.
+Aplicação web em Python que recebe a escolha de uma playlist e inicia sua reprodução em um dispositivo Spotify Connect por meio da Spotify Web API.
 
-## 1. Pré-requisitos
+## Visão geral
 
-- Python 3.11+;
+O usuário autentica sua conta Spotify, escolhe uma das três playlists configuradas e seleciona o dispositivo de reprodução. O backend identifica a opção, transfere o playback para o dispositivo escolhido e solicita o início da playlist.
+
+```mermaid
+flowchart LR
+    A[Formulário web] -->|POST /play| B[Flask]
+    B --> C[Spotify Web API]
+    C --> D[Spotify Connect]
+    D --> E[Reprodução da playlist]
+```
+
+## Funcionalidades
+
+- autenticação OAuth 2.0 com renovação automática do token;
+- seleção entre três playlists configuráveis;
+- listagem de dispositivos Spotify Connect disponíveis;
+- transferência do playback para o dispositivo escolhido;
+- nova tentativa automática em erros transitórios da API;
+- mensagens para ausência de dispositivo, falhas de autorização e limite de requisições;
+- credenciais e configurações isoladas em arquivo `.env`.
+
+## Atendimento aos requisitos do CP2
+
+| Requisito | Implementação |
+| --- | --- |
+| Linguagem | Lógica da automação e servidor desenvolvidos em Python. HTML e CSS são usados apenas na interface. |
+| Integração externa | Consumo da Spotify Web API REST com a biblioteca `requests`. |
+| Qualidade do código | Funções separadas para OAuth, tokens, chamadas HTTP, dispositivos e reprodução, com comentários nos pontos relevantes. |
+| Dependências | Bibliotecas e versões declaradas em `requirements.txt`. |
+| Entrega | Repositório sem credenciais, tokens, ambiente virtual ou arquivos temporários. |
+
+## Tecnologias
+
+- Python 3.11+
+- Flask 3
+- Requests
+- python-dotenv
+- Spotify Web API e Spotify Connect
+- HTML e CSS
+
+## Pré-requisitos
+
+- Python 3.11 ou superior;
 - conta Spotify Premium;
-- Spotify aberto em um notebook, celular ou dispositivo Spotify Connect;
-- app criado em https://developer.spotify.com/dashboard.
+- Spotify Desktop, aplicativo móvel ou outro dispositivo Spotify Connect;
+- aplicativo criado no [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
 
-## 2. Configuração no Spotify Developer Dashboard
+## Configuração do Spotify
 
-1. Crie um app e habilite **Web API**.
-2. Em **Redirect URIs**, adicione exatamente: `http://127.0.0.1:5000/callback`.
-3. Copie Client ID e Client Secret.
-4. Em Development Mode, use a conta dona do app ou adicione os usuários necessários em Users Management.
+1. Crie um aplicativo no Spotify Developer Dashboard e habilite a Web API.
+2. Cadastre exatamente `http://127.0.0.1:5000/callback` em **Redirect URIs**.
+3. Copie o Client ID e gere um Client Secret.
+4. Use a conta proprietária do aplicativo ou autorize os usuários necessários no modo de desenvolvimento.
+5. Crie ou revise três playlists adequadas à apresentação e copie suas URIs.
 
-## 3. Preparar as playlists
+Uma URI de playlist tem o formato `spotify:playlist:ID_DA_PLAYLIST`.
 
-Para evitar qualquer risco de conteúdo explícito, crie três playlists próprias e revise manualmente as faixas. Sugestão:
-
-- Focus Instrumental;
-- Lo-fi Clean;
-- Acoustic Clean.
-
-No Spotify, copie a URI da playlist e coloque-a no `.env`.
-
-## 4. Executar
+## Instalação
 
 No Windows PowerShell:
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-copy .env.example .env
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
 ```
 
-Edite o `.env` e depois:
+Preencha o `.env`:
+
+```dotenv
+SPOTIFY_CLIENT_ID=seu_client_id
+SPOTIFY_CLIENT_SECRET=seu_client_secret
+SPOTIFY_REDIRECT_URI=http://127.0.0.1:5000/callback
+
+PLAYLIST_1_URI=spotify:playlist:ID_DA_PLAYLIST_1
+PLAYLIST_2_URI=spotify:playlist:ID_DA_PLAYLIST_2
+PLAYLIST_3_URI=spotify:playlist:ID_DA_PLAYLIST_3
+```
+
+Nunca publique o `.env` ou o arquivo `.spotify_token.json`.
+
+## Execução
 
 ```powershell
+.\.venv\Scripts\Activate.ps1
 python app.py
 ```
 
-Abra: `http://127.0.0.1:5000`
+Acesse [http://127.0.0.1:5000](http://127.0.0.1:5000). Na primeira execução, clique em **Conectar Spotify** e autorize o aplicativo.
 
-Na primeira vez, clique em **Conectar Spotify** e aceite as permissões.
+Antes da demonstração:
 
-Após a primeira vez, executar:
+1. Abra o Spotify na mesma conta usada na autenticação.
+2. Reproduza uma música por alguns segundos para ativar o dispositivo.
+3. Mantenha a aplicação e o Spotify abertos.
+4. Escolha a playlist e o dispositivo.
+5. Clique em **Reproduzir playlist**.
+
+## Testes
 
 ```powershell
-.venv\Scripts\Activate.ps1
-python app.py
+python -m compileall -q app.py tests
+python -m unittest discover -s tests -v
 ```
 
-## 5. Demonstração em aula
+O teste automatizado valida a repetição da chamada de reprodução após uma falha transitória `500` da API.
 
-Antes da validação:
+## Diagnóstico
 
-1. execute `python app.py`;
-2. abra o Spotify Desktop ou celular com a mesma conta;
-3. toque uma música por alguns segundos para garantir que o dispositivo esteja disponível;
-4. abra o formulário no navegador;
-5. escolha uma playlist;
-6. clique em **Reproduzir playlist**.
+| Situação | Ação recomendada |
+| --- | --- |
+| `401` | Exclua `.spotify_token.json` e autentique novamente. |
+| `403` | Confirme a assinatura Premium, o usuário autorizado e os scopes OAuth. |
+| Nenhum dispositivo | Abra o Spotify e reproduza uma faixa manualmente. |
+| `429` | Aguarde o período indicado no cabeçalho `Retry-After`. |
+| `500`, `502`, `503` ou `504` | A aplicação faz até três tentativas antes de retornar o erro. |
 
-O backend identifica a opção, transfere o playback para o dispositivo escolhido/ativo e chama o endpoint de reprodução com a URI da playlist.
+## Estrutura do projeto
 
-## 6. Scopes utilizados
+```text
+spotify_rpa/
+|-- app.py
+|-- requirements.txt
+|-- .env.example
+|-- static/
+|   `-- style.css
+|-- templates/
+|   |-- index.html
+|   `-- result.html
+|-- tests/
+|   `-- test_playback.py
+`-- Checkpoint_2_RPA_Spotify.docx
+```
 
-- `user-read-playback-state`: localizar dispositivos Spotify Connect;
-- `user-modify-playback-state`: transferir e iniciar a reprodução.
+## Equipe
 
-## 7. Diagnóstico rápido
+| Integrante | RM |
+| --- | --- |
+| Tomáz Versolato Carballo | 551417 |
+| Rony Ken Nagai | 551549 |
+| Aksel Viktor Caminha Rae | 99011 |
+| Ian Xavier Kuraoka | 98860 |
 
-- **401**: token inválido/expirado; exclua `.spotify_token.json` e autentique de novo.
-- **403**: confirme Spotify Premium, usuário permitido no app e scopes.
-- **404 / nenhum dispositivo**: abra o Spotify e reproduza uma faixa manualmente antes do teste.
-- **429**: limite temporário de chamadas; aguarde o período indicado pelo Spotify.
+## Possível adaptação para YouTube
+
+A interface pode ser adaptada para selecionar playlists do YouTube, consultar seus dados pela YouTube Data API e reproduzi-las com a YouTube IFrame Player API. Diferentemente do Spotify Connect, esse modelo reproduziria o conteúdo no player web e estaria sujeito às regras de autoplay do navegador.

@@ -34,6 +34,7 @@ Thumbs.db
 # Temporary files generated while inspecting DOCX/PDF artifacts
 __docx_check/
 __docx_check.zip
+Checkpoint_1_RPA_Spotify.pdf
 
 # Local logs
 *.log
